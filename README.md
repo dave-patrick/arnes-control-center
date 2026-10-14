@@ -14,7 +14,7 @@ Requires Node.js 22 or later. No npm dependencies are required.
 npm start
 ```
 
-Open http://127.0.0.1:9130/ . Optional commands: `npm run bridge` (Codex on 9131) and `npm run hermes-proxy` (proxy on 9132). These require their separately installed upstream tools. The package does not install Codex, Hermes or your other services.
+Open http://127.0.0.1:9130/ . Optional commands: `npm run bridge` (Codex on 9131) and `npm run hermes-proxy` (proxy on 9132). The optional Codex bridge currently requires Windows with the authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other installation layouts are not automatically discovered. These commands require their separately installed upstream tools. The package does not install Codex, Hermes or your other services.
 
 ## Features
 

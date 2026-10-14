@@ -26,7 +26,7 @@ Add your own Gemini API key in the Gemini tab. It is stored locally under your u
 
 ## Codex and Hermes
 
-Codex requires the separately installed authenticated Codex CLI. Run npm run bridge for the dedicated local bridge on port 9131. Hermes requires your existing dashboard on localhost:9119; npm run hermes-proxy serves the local proxy on 9132. Those commands provide access to local authenticated tools; keep them private.
+The optional Codex bridge currently requires Windows and an authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other Codex installation layouts are not discovered automatically. Run npm run bridge for the dedicated local bridge on port 9131. Hermes requires your existing dashboard on localhost:9119; npm run hermes-proxy serves the local proxy on 9132. Those commands provide access to local authenticated tools; keep them private.
 
 ## Addresses and privacy
 
