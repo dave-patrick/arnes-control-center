@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Control Center · arnés</title>
+  <link rel="stylesheet" href="tool-pages.css?v=20261013-scrollbars">
+  <link rel="stylesheet" href="control-center.css?v=20261013-scrollbars">
+</head>
+<body class="control">
+  <header class="cc-header">
+    <div class="cc-heading">
+      <div class="eyebrow">CONTROL CENTER <span>·</span> PERSONAL INFRASTRUCTURE</div>
+      <h1 id="control-title">System overview</h1>
+      <p>Live health for your local services and Tailnet tools.</p>
+    </div>
+    <div class="cc-actions">
+      <span id="overall-status" class="overall-status"><i></i> Checking services</span>
+      <button id="refresh-status" class="refresh-button">↻ Refresh</button>
+      <a id="external" target="_blank" rel="noopener noreferrer" hidden>Open separately ↗</a>
+      <button id="edit" hidden>Configure</button>
+      <button id="add" class="primary">＋ Add page</button>
+    </div>
+  </header>
+
+  <nav id="tabs" aria-label="Control Center pages" role="tablist"></nav>
+
+  <main>
+    <section id="overview" class="cc-overview" aria-label="System health overview">
+      <div class="cc-stats">
+        <article class="cc-stat"><span>Systems tracked</span><strong>12</strong><small>Across this PC and T580</small></article>
+        <article class="cc-stat"><span>Live probes online</span><strong id="reachable-count">—/9</strong><small id="check-caption">Checking local endpoints</small></article>
+        <article class="cc-stat"><span>Memory service</span><strong>680</strong><small>Perseus memories · last reported</small></article>
+        <article class="cc-stat cc-stat-status"><span>Last check</span><strong id="last-check">Waiting…</strong><small id="last-check-label">Awaiting first probe</small></article>
+      </div>
+
+      <section class="cc-system-panel">
+        <div class="cc-panel-heading">
+          <div><div class="eyebrow">SERVICE HEALTH</div><h2>Your systems</h2></div>
+          <span id="probe-summary">9 live checks · 3 reported states</span>
+        </div>
+        <div class="cc-table-wrap">
+          <table class="cc-table">
+            <thead><tr><th>System</th><th>Endpoint</th><th>Status</th><th>Details</th></tr></thead>
+            <tbody id="system-rows"></tbody>
+          </table>
+        </div>
+        <div id="tailnet-hint" class="cc-hint" hidden>Live checks run from the private workspace on your PC. <a href="https://hub.example.invalid/" target="_blank" rel="noopener noreferrer">Open the Tailscale workspace ↗</a></div>
+        <div class="cc-hint">Retired from T580: Dockge (:5001) and Komodo Periphery (:8120). Audiobookshelf opens in its tab through the private workspace.</div>
+      </section>
+    </section>
+
+    <section id="system-view" class="cc-system-view" hidden aria-label="System details">
+      <div class="cc-system-summary">
+        <div class="cc-system-titleline"><span id="system-icon" class="cc-system-icon">•</span><div><div class="eyebrow">SYSTEM WORKSPACE</div><h2 id="system-title">System</h2></div><span id="system-status" class="status-pill reported"><i></i>Checking</span></div>
+        <code id="system-endpoint" class="cc-system-endpoint"></code>
+        <p id="system-description" class="cc-system-description"></p>
+      </div>
+      <div id="system-message" class="cc-system-message" hidden></div>
+      <section id="perseus-view" class="cc-perseus-view" hidden aria-label="Perseus Vault memory status">
+        <div class="cc-perseus-heading"><div><div class="eyebrow">MEMORY VAULT</div><h2>Memory service</h2></div><span class="cc-local-badge"><i></i> Local MCP</span></div>
+        <div class="cc-perseus-stats">
+          <article><span>MEMORIES</span><strong id="perseus-count">—</strong><small>Reported total</small></article>
+          <article><span>EMBEDDINGS</span><strong id="perseus-embedding">—</strong><small>Vector index readiness</small></article>
+          <article><span>SEMANTIC RECALL</span><strong id="perseus-recall">—</strong><small>Memory retrieval capability</small></article>
+          <article><span>CONNECTION</span><strong id="perseus-connection">—</strong><small>Service interface</small></article>
+        </div>
+        <p class="cc-perseus-note">Perseus has no browser dashboard or live probe here. These values reflect the latest inventory report, not a live query to its MCP server.</p>
+      </section>
+      <section id="system-frame-wrap" class="cc-system-frame-wrap" hidden>
+        <div class="cc-frame-caption"><span id="frame-label">Embedded management view</span><span>Some services restrict embedded views; use Open separately if needed.</span></div>
+        <iframe id="system-frame" title="System management UI" referrerpolicy="no-referrer"></iframe>
+      </section>
+    </section>
+
+    <section id="management" class="cc-management" hidden>
+      <section id="empty" class="empty">
+        <div class="empty-icon">＋</div><h2>Add a management page</h2>
+        <p>Connect a web console such as OpenViking, Dockhand, Home Assistant, or another local service. It will appear as a tab here.</p>
+        <button class="primary" onclick="document.getElementById('add').click()">Add your first page</button>
+      </section>
+      <section id="views" hidden></section>
+    </section>
+  </main>
+
+  <footer><span id="address">Checking local services…</span><span>Private workspace · management tabs saved in this browser</span></footer>
+
+  <dialog id="dialog">
+    <form id="form">
+      <div class="dialog-head"><div><div class="eyebrow">MANAGEMENT PAGE</div><h2 id="dialog-title">Add management UI</h2></div><button type="button" id="close" class="close" aria-label="Close">×</button></div>
+      <label for="name">Tool name</label><input id="name" maxlength="60" required placeholder="e.g. Dockhand">
+      <label for="url">Management page URL</label><input id="url" type="url" required placeholder="http://127.0.0.1:8080/">
+      <p class="muted">Use the address you normally open. Local tools connect from the computer viewing this workspace; some sites block embedded views.</p>
+      <p id="error" role="alert"></p>
+      <div class="actions"><button type="button" id="left">Move left</button><button type="button" id="right">Move right</button><button type="button" id="remove" class="danger">Remove</button><button class="primary" type="submit">Save page</button></div>
+    </form>
+  </dialog>
+  <script src="control-center.js?v=20261013-app-icons"></script>
+</body>
+</html>

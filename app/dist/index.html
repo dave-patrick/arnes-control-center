@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>arnés</title>
+  <meta name="description" content="Your workspace for Hermes and other harness dashboards.">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/arnes-icon.png?v=20261013-icon">
+  <link rel="apple-touch-icon" href="icons/arnes-icon.png?v=20261013-icon">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Harness navigation">
+      <header>
+        <a class="brand" href="#"><img class="brand-logo" src="icons/workspace-logo.png?v=20261001" alt=""><img class="brand-wordmark" src="icons/arnes-wordmark.png?v=1" alt="arnés"></a>
+        <span class="private">AGENT HARNESS</span>
+      </header>
+      <nav aria-label="Harness tabs" id="tabs"></nav>
+      <div class="sidebar-bottom">
+        <button id="add">＋ Add harness</button><button id="navigation-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true" title="Collapse navigation"></button>
+        <span>Tabs saved in this browser</span>
+      </div>
+    </aside>
+    <main>
+      <div class="toolbar">
+        <div><span class="eyebrow">YOUR HARNESSES, ONE WORKSPACE</span><h1 id="title">Hermes</h1></div>
+        <div class="actions">
+          <span id="state">Opening dashboard</span>
+          <button id="reload" title="Reload dashboard">↻ Reload</button>
+          <button id="edit">Configure</button>
+          <a id="external" target="_blank" rel="noopener noreferrer">Open separately ↗</a>
+        </div>
+      </div>
+      <div class="notice" id="notice">
+        <span>◉</span>
+        <p>This tab connects directly from your browser to your local Hermes dashboard. Keep Hermes running on this PC. If the embedded view is blocked, use <button id="local">the local workspace</button> or open the dashboard separately.</p>
+        <button id="dismiss" aria-label="Dismiss connection tip">×</button>
+      </div>
+      <section id="frames" aria-label="Harness dashboard"></section>
+      <footer><span id="address"></span><span>Private workspace · layout saved on this browser</span></footer>
+    </main>
+  </div>
+  <dialog id="config">
+    <form id="form">
+      <div class="dialog-top"><span class="eyebrow">WORKSPACE TAB</span><button type="button" id="cancel" aria-label="Close">×</button></div>
+      <h2 id="dialog-title">Add a harness</h2>
+      <p class="muted">Connect an existing dashboard. Its chat, sessions, and controls stay inside the tab.</p>
+      <label for="name">Harness name</label>
+      <input id="name" maxlength="60" required placeholder="e.g. OpenClaw">
+      <label for="url">Dashboard URL</label>
+      <input id="url" type="url" required placeholder="http://127.0.0.1:3000/">
+      <p class="hint">Use the address you normally open. Local addresses connect to the computer viewing this site. Some dashboards restrict embedding.</p>
+      <p id="error" role="alert"></p>
+      <div class="dialog-actions"><button type="button" id="left">Move left</button><button type="button" id="right">Move right</button><button type="button" id="remove" class="danger">Remove</button><button type="submit" class="primary">Save tab</button></div>
+    </form>
+  </dialog>
+  <script src="app.js?v=20261013-scrollbars"></script>
+</body>
+</html>

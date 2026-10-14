@@ -1,0 +1,12 @@
+version: "1.0"
+project:
+  name: "arnes-control-center"
+  description: "Software project in arnes-control-center. See existing project documentation for its purpose."
+layers:
+  context: true
+  skills: false
+  commands: false
+  agents: false
+  permissions: false
+compatible_with:
+  - any

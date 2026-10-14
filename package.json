@@ -1,0 +1,16 @@
+{
+  "name": "arnes-control-center",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local agent harness and service workspace",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node app/local-server.cjs",
+    "bridge": "node app/bridge-server.cjs",
+    "hermes-proxy": "node app/hermes-proxy.cjs",
+    "check": "node scripts/check.mjs",
+    "check:site": "node scripts/check-site.mjs"
+  }
+}

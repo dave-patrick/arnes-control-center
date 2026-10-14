@@ -1,0 +1,10 @@
+/graft/
+*.log
+.env
+.env.*
+!.env.example
+.openai/
+node_modules/
+artifacts/
+*.zip
+
