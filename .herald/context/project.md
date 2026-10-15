@@ -16,3 +16,5 @@ Software project in arnes-control-center. See existing project documentation for
 - Herald compiler output replaces vendor files. Preserve and merge existing guidance before compiling.
 
 - app/ is the cleaned local Node workspace; site/ is the public static landing/help site. Never commit private settings or change the running original workspace. See documentation/ARCHITECTURE.md.
+
+- The app publisher is Atomic 22 Industries. Keep publisher.json, package metadata and first-party app/site credits consistent; preserve existing licence and third-party attribution.

@@ -1,5 +1,7 @@
 # arnés Control Center
 
+Published by **Atomic 22 Industries**.
+
 A local browser workspace for agent dashboards, service health and provider information.
 
 [Website](https://dave-patrick.github.io/arnes-control-center/) · [Downloads](https://github.com/dave-patrick/arnes-control-center/releases) · [Help](documentation/HELP.md)

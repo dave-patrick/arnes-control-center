@@ -1,6 +1,6 @@
 {
   "name": "arnes-control-center",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Local agent harness and service workspace",
   "engines": {
@@ -12,5 +12,7 @@
     "hermes-proxy": "node app/hermes-proxy.cjs",
     "check": "node scripts/check.mjs",
     "check:site": "node scripts/check-site.mjs"
-  }
+  },
+  "author": "Atomic 22 Industries",
+  "publisher": "Atomic 22 Industries"
 }
