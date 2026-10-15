@@ -2,3 +2,5 @@
 h3{line-height:1.35}.lane h2,.queue h2{font-size:1.5rem;line-height:1.35}.stage h2{margin-top:12px}button:disabled{cursor:default;background:#263b52;color:#c2d1e2}
 
 header .brand{width:220px;max-height:85px;object-fit:contain}.help>h1{margin-top:50px}.help>nav{margin-bottom:35px}.help p{max-width:70ch}
+
+.explanation{border-top:1px solid #334258;padding:70px 0}.explanation-intro{max-width:900px}.explanation h2{margin-top:0}.walkthrough{counter-reset:walk;list-style:none;padding:0;margin:45px 0}.walkthrough li{counter-increment:walk;display:grid;grid-template-columns:70px 1fr 1.65fr;gap:28px;padding:28px 0;border-top:1px solid #29384c;align-items:start}.walkthrough li:before{content:counter(walk,decimal-leading-zero);font-size:2rem;line-height:1.2;color:#80b8f5}.walkthrough h3{margin:0;line-height:1.35}.walkthrough p{margin:0;color:#c2cfe0}.practical{max-width:900px;padding-top:25px}.practical h3{margin-top:28px}.practical p{color:#c2cfe0}@media(max-width:760px){.walkthrough li{grid-template-columns:42px 1fr;gap:15px}.walkthrough p{grid-column:2}.explanation{padding:40px 0}}
