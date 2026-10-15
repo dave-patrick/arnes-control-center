@@ -18,3 +18,5 @@ Software project in arnes-control-center. See existing project documentation for
 - app/ is the cleaned local Node workspace; site/ is the public static landing/help site. Never commit private settings or change the running original workspace. See documentation/ARCHITECTURE.md.
 
 - The app publisher is Atomic 22 Industries. Keep publisher.json, package metadata and first-party app/site credits consistent; preserve existing licence and third-party attribution.
+
+- Public landing pages use dark app-specific compositions with real approved brand assets; shared Atomic 22 navigation links to the blue Notes directory. Publish only site/ via GitHub Pages. Never serve or publish private workspace data.
