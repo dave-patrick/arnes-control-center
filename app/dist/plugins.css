@@ -1,0 +1,42 @@
+:root{color-scheme:dark;--bg:#181b20;--panel:#151920;--line:#374252;--text:#edf2fa;--muted:#adbacc;--accent:#91c3ff;font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:#4b586b var(--panel)}
+body{margin:0;padding:28px 32px;max-width:1400px;margin-inline:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.back-home{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 0;margin-bottom:12px;text-decoration:none}.back-home:hover{text-decoration:underline}.back-home svg{flex:none}
+h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:0 0 6px;font-weight:600}
+h2{font-size:21px;font-weight:600;letter-spacing:-.015em;margin:0 0 10px}
+h3{font-size:15px;margin:24px 0 8px}
+p{margin:4px 0 16px;max-width:72ch;color:var(--muted)}
+button,input,select,textarea{font:inherit;color:inherit;border:1px solid #526176;border-radius:7px;padding:9px 12px;background:#222b38;max-width:100%}
+button{cursor:pointer;min-height:42px}button:hover{background:#303d50}button:disabled{opacity:.55;cursor:default}
+button.primary{background:#91c3ff;color:#122236;border-color:#91c3ff;font-weight:600}button.primary:hover{background:#b3d5ff}
+a{color:var(--accent);text-underline-offset:3px}a:hover{color:#c6e0ff}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+::selection{background:#375b85;color:white}input,textarea{caret-color:var(--accent)}
+main{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;margin-top:24px;align-items:start}
+nav{display:flex;flex-direction:column;gap:8px}
+nav button{text-align:left;background:transparent;border-color:transparent;padding:14px}
+nav button[aria-current=true]{background:#222e3f;border-color:#526b8b}
+nav strong,nav small{display:block}nav small{color:var(--muted);margin-top:5px}
+#detail{min-width:0;border-left:1px solid var(--line);padding-left:32px;min-height:360px}
+.status{font-size:12px;color:var(--accent);margin-bottom:12px}
+.permissions{display:flex;gap:8px;flex-wrap:wrap;padding:0;list-style:none;margin:12px 0}
+.permissions li{border:1px solid var(--line);border-radius:5px;padding:4px 8px;font:12px/1.6 ui-monospace,Consolas,monospace}
+.grant{display:flex;align-items:start;gap:10px;max-width:65ch;margin:16px 0;cursor:pointer}.grant input{margin-top:5px}
+label{display:block;font-weight:600;margin:16px 0 6px}
+input:not([type=checkbox]),textarea,select{width:100%}textarea{min-height:108px;resize:vertical;font-family:ui-monospace,Consolas,monospace}
+form{max-width:700px;margin-top:20px}form button{margin-top:16px}
+#message{margin:18px 0 0;min-height:22px}#message.error{color:#ffb4ab}
+.setup{margin-top:20px;padding:18px 0;border-block:1px solid var(--line)}
+.setup code{overflow-wrap:anywhere;font-size:12px;color:var(--text)}
+#result{margin-top:24px}
+pre{font:12px/1.65 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;background:#10151c;padding:18px;border-radius:7px;max-height:460px;overflow:auto;margin:10px 0;color:#dce7f5}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.activity{border-top:1px solid var(--line);margin-top:36px;padding-top:24px}
+.activity h2{font-size:17px}.activity p{font-size:12px}
+.activity ol{padding:0;list-style:none}.activity li{display:flex;gap:14px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid #2b3441;font-size:12px}
+.activity time{color:var(--muted);font-variant-numeric:tabular-nums;min-width:160px}.activity .outcome{margin-left:auto;color:var(--accent)}
+footer{font-size:11px;color:var(--muted);margin-top:24px}
+@media(max-width:700px){body{padding:20px 16px}main{grid-template-columns:1fr;gap:22px}nav{flex-direction:row;flex-wrap:wrap}nav button{flex:1;min-width:150px}#detail{border-left:0;border-top:1px solid var(--line);padding:22px 0 0;min-height:0}.activity li{gap:6px 12px}}
+
+.google-signin{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#1f1f1f;border:1px solid #747775;border-radius:4px;font:500 14px/1.4 Arial,sans-serif;min-height:44px;padding:10px 20px;margin:8px 0 12px}.google-signin:hover{background:#edf2fa}.connection-note{font-size:12px;margin-top:4px} .google-signin + .connection-note{max-width:60ch}

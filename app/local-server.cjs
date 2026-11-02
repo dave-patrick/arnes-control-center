@@ -4,18 +4,24 @@ const path = require('node:path');
 const os = require('node:os');
 const net = require('node:net');
 const bridge = require('./codex-bridge.cjs');
+const { PluginHost } = require('./plugin-host.cjs');
+const pluginHost = new PluginHost();
+pluginHost.ready.catch(() => {});
 const tailnetName = 'hub.example.invalid';
-const audiobookShelf = { hostname: '127.0.0.1', port: 8000 };
+const serviceUrls = require('./service-config.cjs').load();
+const bookUrl=new URL(serviceUrls.audiobookshelf);
+const audiobookShelf={hostname:bookUrl.hostname,port:Number(bookUrl.port||80)};
+const serviceFrames = require('./service-proxy.cjs').start(serviceUrls, 9150);
 
 const root = path.join(__dirname, 'dist');
 const trustedHosts = new Set([
-  '127.0.0.1:9130',
-  'localhost:9130',
+  '127.0.0.1:9140',
+  'localhost:9140',
   'hub.example.invalid'
 ]);
 const origins = new Set([
-  'http://127.0.0.1:9130',
-  'http://localhost:9130',
+  'http://127.0.0.1:9140',
+  'http://localhost:9140',
   'https://hub.example.invalid'
 ]);
 const types = {
@@ -147,22 +153,23 @@ function probeTcp(host, port, timeout = 1800) {
 }
 
 async function controlCenterStatus() {
-  const [openviking, homeAssistant, lmStudio, hermesGateway, hermesDashboard, dockhand, searxng, audiobookShelf, traefik, motusLeap] = await Promise.all([
-    probeService('http://127.0.0.1:1933/health'),
-    probeService('http://127.0.0.1:8123/api/'),
-    probeService('http://127.0.0.1:1234/v1/models'),
-    probeService('http://127.0.0.1:8642/health'),
-    probeService('http://127.0.0.1:9119/'),
-    probeService('http://127.0.0.1:3000/containers'),
-    probeService('http://127.0.0.1:8080/'),
-    probeService('http://127.0.0.1:8000/'),
-    probeTcp('127.0.0.1', 8443),
-    probeService('https://tubemanager.onrender.com/health', 6000)
+  const [openviking, homeAssistant, lmStudio, hermesGateway, hermesDashboard, dockhand, searxng, audiobookShelf, traefik, motusLeap, bookorbit] = await Promise.all([
+    probeService(new URL('/health',serviceUrls.openviking).href),
+    probeService(new URL('/api/',serviceUrls['home-assistant']).href),
+    probeService(serviceUrls['lm-studio']),
+    probeService(serviceUrls['hermes-gateway']),
+    probeService(serviceUrls['hermes-dashboard']),
+    probeService(serviceUrls.dockhand),
+    probeService(serviceUrls.searxng),
+    probeService(serviceUrls.audiobookshelf),
+    probeTcp(new URL(serviceUrls.traefik).hostname,Number(new URL(serviceUrls.traefik).port||443)),
+    probeService('https://tubemanager.onrender.com/health', 6000),
+    probeService(serviceUrls.bookorbit)
   ]);
   motusLeap.reachable = motusLeap.status === 200;
   if (lmStudio.reachable && lmStudio.status === 200) {
     try {
-      const response = await fetch('http://127.0.0.1:1234/v1/models', { signal: AbortSignal.timeout(3500) });
+      const response = await fetch(serviceUrls['lm-studio'], { signal: AbortSignal.timeout(3500) });
       const payload = await response.json();
       lmStudio.modelCount = Array.isArray(payload.data) ? payload.data.length : null;
     } catch { lmStudio.modelCount = null; }
@@ -180,10 +187,17 @@ async function controlCenterStatus() {
       { id: 'dockhand', name: 'Dockhand', endpoint: '127.0.0.1:3000', live: true, ...dockhand, detail: 'Containers view · LAN and Tailscale' },
       { id: 'searxng', name: 'SearXNG', endpoint: '127.0.0.1:8080', live: true, ...searxng, detail: 'Search UI · 2 containers' },
       { id: 'audiobookshelf', name: 'Audiobookshelf', endpoint: 't580 (Tailscale):8000', openUrl: 'http://127.0.0.1:8000/', live: true, ...audiobookShelf, detail: 'Library responds · private same-origin proxy available in the Tailscale workspace' },
+      { id: 'bookorbit', name: 'BookOrbit', endpoint: 't580 (Tailscale):3001', live: true, ...bookorbit, detail: 'Embedded through the Control Center service proxy' },
       { id: 'traefik', name: 'Traefik', endpoint: '127.0.0.1:8443', live: true, ...traefik, detail: 'TLS entrypoint · shockwave-companion-t580-traefik-1' },
       { id: 'shockwave-api', name: 'Shockwave API', endpoint: 'T580 localhost:18081', live: false, reachable: true, status: 'reported', statusText: 'Healthy · Docker reported Up 4 days', detail: 'Loopback-only mapping · shockwave-companion-t580-api-1' },
       { id: 'shockwave-updater', name: 'Shockwave Updater', endpoint: 'T580 Docker', live: false, reachable: true, status: 'reported', statusText: 'Up 4 days · Docker reported', detail: 'Crash loop resolved · shockwave-companion-t580-updater-1' }
-    ]
+    ].map(system=>{
+      const url=serviceUrls[system.id];if(!url)return system;
+      return {...system,endpoint:new URL(url).host,openUrl:['traefik','hermes-gateway'].includes(system.id)?null:url,
+        frameUrl:system.id==='audiobookshelf'?'/audiobookshelf/':system.id==='home-assistant'?null:serviceFrames[system.id]||(['lm-studio','traefik'].includes(system.id)?null:url),
+        ...(system.id==='home-assistant'?{message:'Home Assistant blocks embedded sign-in. Use Open separately to access its dashboard.'}:{}),
+        detail:system.live?'Live probe of the configured service address.':system.detail};
+    })
   };
 }
 
@@ -219,10 +233,21 @@ function proxyAudiobookshelf(req, res) {
   req.pipe(upstream);
 }
 
+// dsh web binds a per-process launch token and prints the tokenized URL on
+// startup. The startup script records that URL so the workspace tab can
+// authenticate; without it the embedded frame only sees the 401 notice.
+function dshWebUrl() {
+  try {
+    const file = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'Arnes', 'dsh.url');
+    const url = fs.readFileSync(file, 'utf8').trim();
+    return /^http:\/\/127\.0\.0\.1:3080\/\?token=[A-Za-z0-9_-]{16,}$/.test(url) ? url : null;
+  } catch { return null; }
+}
+
 async function harnessStatus() {
   const [hermes, codex, dsh, antigravity] = await Promise.all([
-    probeService('http://127.0.0.1:9119/'),
-    probeService('http://127.0.0.1:9131/hub/events'),
+    probeService(serviceUrls['hermes-dashboard']),
+    probeService('http://127.0.0.1:9141/hub/events'),
     probeService('http://127.0.0.1:3080/'),
     probeService('https://antigravity.google.com/', 4500)
   ]);
@@ -233,7 +258,7 @@ async function harnessStatus() {
     gemini: { state: geminiConfigured ? 'ready' : 'setup', label: geminiConfigured ? 'API key saved locally' : 'API key needed' },
     antigravity: { state: antigravity.reachable ? 'external' : 'down', label: antigravity.reachable ? 'Remote Control opens separately' : 'Remote Control unavailable' },
     herdr: { state: 'external', label: 'Managed from Herdr terminal' },
-    dsh: { state: dsh.reachable ? 'up' : 'down', label: dsh.reachable ? 'Local service online' : 'Local service offline' },
+    dsh: { state: dsh.reachable ? 'up' : 'down', label: dsh.reachable ? 'Local service online' : 'Local service offline', url: dshWebUrl() },
     'control-center': { state: 'up', label: 'Management workspace online' }
   };
   return { checkedAt: new Date().toISOString(), statuses: rows };
@@ -246,6 +271,8 @@ const server = http.createServer(async (req, res) => {
     try { url = new URL(req.url, 'http://localhost'); }
     catch { return json(res, 400, { error: 'Invalid address' }); }
     const pathname = decodeURIComponent(url.pathname);
+
+    if (pathname === '/hub/plugins' || pathname.startsWith('/hub/plugins/')) return await pluginHost.route(req, res, url, { json, body });
 
     if (pathname === '/audiobookshelf' || pathname.startsWith('/audiobookshelf/')) return proxyAudiobookshelf(req, res);
 
@@ -341,9 +368,10 @@ server.on('upgrade', (req, socket, head) => {
   socket.on('close', () => upstream.destroy());
 });
 
-server.listen(9130, '127.0.0.1', () => console.log('Harness Hub: http://127.0.0.1:9130/'));
+server.listen(9140, '127.0.0.1', () => console.log('Harness Hub: http://127.0.0.1:9140/'));
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
+  await pluginHost.dispose();
   bridge.stop();
   server.close(() => process.exit());
 });

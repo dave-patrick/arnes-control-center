@@ -5,8 +5,8 @@ const net = require('node:net');
 
 const upstream = { hostname: '127.0.0.1', port: 9119, origin: 'http://127.0.0.1:9119' };
 const allowedHosts = new Map([
-  ['127.0.0.1:9132', 'http'],
-  ['localhost:9132', 'http'],
+  ['127.0.0.1:9142', 'http'],
+  ['localhost:9142', 'http'],
   ['hub.example.invalid:8443', 'https']
 ]);
 const proxyOrigin = host => `http://${host}`;
@@ -38,7 +38,7 @@ function proxiedHeaders(source, host) {
       ? headers['content-security-policy'].join('; ')
       : headers['content-security-policy'];
     headers['content-security-policy'] = policy.replace(/frame-ancestors\s+[^;]+/gi,
-      `frame-ancestors ${proxyOrigin('127.0.0.1:9130')} ${proxyOrigin('localhost:9130')} https://harness-hub.davepatrick.chatgpt.site https://hub.example.invalid`);
+      `frame-ancestors ${proxyOrigin('127.0.0.1:9140')} ${proxyOrigin('localhost:9140')} https://harness-hub.davepatrick.chatgpt.site https://hub.example.invalid`);
   }
   if (headers.location) {
     try {
@@ -102,8 +102,8 @@ for (const host of ['127.0.0.1', '::1']) {
     peer.on('error', () => socket.destroy());
     socket.on('error', () => peer.destroy());
   });
-  server.listen({ host, port: 9132, ipv6Only: host.includes(':') }, () => {
-    console.log(`Hermes loopback proxy: http://${host}:9132/`);
+  server.listen({ host, port: 9142, ipv6Only: host.includes(':') }, () => {
+    console.log(`Hermes loopback proxy: http://${host}:9142/`);
   });
   servers.push(server);
 }

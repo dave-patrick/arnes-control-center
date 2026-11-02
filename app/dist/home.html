@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home · Arnés</title><link rel="stylesheet" href="home.css"></head>
+<body><main class="dashboard">
+<header class="home-header"><div><p id="today"></p><h1>Your day, together.</h1><p class="intro">Mail, plans, and the tools you run.</p></div><div class="home-actions"><button id="refresh" type="button">Refresh</button><button id="customize" type="button" aria-expanded="false" aria-controls="customization">Customize</button></div></header>
+<section id="customization" aria-label="Customize homepage" hidden><div class="settings-heading"><h2>Make room for what matters</h2><button id="done" type="button">Done</button></div><p>Choose widgets below. Drag a widget or use its move buttons to change the order.</p><div id="widget-choices"></div><div class="preferences"><label>Refresh automatically <select id="refresh-period"><option value="0">Off</option><option value="60">Every minute</option><option value="300">Every 5 minutes</option><option value="900">Every 15 minutes</option></select></label><button id="reset" type="button">Restore default layout</button></div><p class="hint">Layout settings stay in this browser. Mail, events, and task contents are never saved in browser storage.</p></section>
+<p id="announcement" role="status" aria-live="polite"></p><div id="widgets" class="widget-grid"></div><p id="updated" class="updated"></p>
+</main><script src="home-model.js"></script><script src="home.js"></script></body></html>

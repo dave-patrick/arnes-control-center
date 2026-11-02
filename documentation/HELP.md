@@ -2,7 +2,7 @@
 
 ## Run locally
 
-Install Node.js 22 or later. Extract the source package and run npm start from its root, then open http://127.0.0.1:9130/. Existing services using ports 9130–9132 must be stopped or configured separately before running a second copy. The package does not install or start your connected services.
+Install Node.js 22 or later. Extract the source package and run npm start from its root, then open http://127.0.0.1:9140/. Existing services using ports 9140-9142 must be stopped or configured separately before running a second copy. The package does not install or start your connected services.
 
 ## Harness tabs
 
@@ -26,7 +26,7 @@ Add your own Gemini API key in the Gemini tab. It is stored locally under your u
 
 ## Codex and Hermes
 
-The optional Codex bridge currently requires Windows and an authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other Codex installation layouts are not discovered automatically. Run npm run bridge for the dedicated local bridge on port 9131. Hermes requires your existing dashboard on localhost:9119; npm run hermes-proxy serves the local proxy on 9132. Those commands provide access to local authenticated tools; keep them private.
+The optional Codex bridge currently requires Windows and an authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other Codex installation layouts are not discovered automatically. Run npm run bridge for the dedicated local bridge on port 9141. Hermes requires your existing dashboard on localhost:9119; npm run hermes-proxy serves the local proxy on 9142. Those commands provide access to local authenticated tools; keep them private.
 
 ## Addresses and privacy
 

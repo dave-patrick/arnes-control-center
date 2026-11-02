@@ -1,0 +1,97 @@
+{
+  "apiVersion": 1,
+  "id": "google-workspace",
+  "name": "Google Workspace",
+  "version": "1.0.0",
+  "description": "Connect your Google account to read mail, upcoming events, Drive files, documents, spreadsheets, and tasks.",
+  "permissions": [
+    "google.workspace.read",
+    "credentials.store"
+  ],
+  "actions": [
+    {
+      "id": "configure",
+      "title": "Set up Google connection",
+      "fields": [
+        {
+          "name": "clientId",
+          "label": "OAuth web client ID",
+          "required": true
+        },
+        {
+          "name": "clientSecret",
+          "label": "OAuth client secret",
+          "type": "password",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "connect",
+      "title": "Connect Google account"
+    },
+    {
+      "id": "disconnect",
+      "title": "Disconnect Google account"
+    },
+    {
+      "id": "mail",
+      "title": "Unread mail"
+    },
+    {
+      "id": "calendar",
+      "title": "Upcoming events"
+    },
+    {
+      "id": "drive",
+      "title": "Recent Drive files"
+    },
+    {
+      "id": "tasklists",
+      "title": "Task lists"
+    },
+    {
+      "id": "tasks",
+      "title": "Read tasks",
+      "fields": [
+        {
+          "name": "listId",
+          "label": "Task list ID",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "document",
+      "title": "Read a Google Doc",
+      "fields": [
+        {
+          "name": "documentId",
+          "label": "Document ID",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "spreadsheet",
+      "title": "Read spreadsheet cells",
+      "fields": [
+        {
+          "name": "spreadsheetId",
+          "label": "Spreadsheet ID",
+          "required": true
+        },
+        {
+          "name": "range",
+          "label": "Range",
+          "required": true,
+          "placeholder": "Sheet1!A1:D20"
+        }
+      ]
+    },
+    {
+      "id": "calendars",
+      "title": "Available calendars"
+    }
+  ]
+}

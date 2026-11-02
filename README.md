@@ -16,7 +16,7 @@ Requires Node.js 22 or later. No npm dependencies are required.
 npm start
 ```
 
-Open http://127.0.0.1:9130/ . Optional commands: `npm run bridge` (Codex on 9131) and `npm run hermes-proxy` (proxy on 9132). The optional Codex bridge currently requires Windows with the authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other installation layouts are not automatically discovered. These commands require their separately installed upstream tools. The package does not install Codex, Hermes or your other services.
+Open http://127.0.0.1:9140/ . Optional commands: `npm run bridge` (Codex on 9141) and `npm run hermes-proxy` (proxy on 9142). The optional Codex bridge currently requires Windows with the authenticated npm-global Codex CLI at %APPDATA%/npm/node_modules/@openai/codex/bin/codex.js. Other installation layouts are not automatically discovered. These commands require their separately installed upstream tools. The package does not install Codex, Hermes or your other services.
 
 ## Features
 
@@ -43,3 +43,13 @@ Screenshots are historical captures of the configured app. They do not establish
 
 Run `npm run check` and `npm run check:site` before publishing. MIT licence applies to this project's code; third-party service names and logos identify their respective products. The provider catalog is derived from models.dev; see [third-party notices](THIRD-PARTY-NOTICES.md).
 
+
+## Plugin workspace
+
+A **Plugins** tab now hosts local capabilities alongside the dashboards. It includes local shell execution and a read-only Google Workspace adapter. Plugins start disabled and ask you to review their declared access. See [plugin setup, OAuth connection, and authoring](documentation/PLUGINS.md).
+
+The current local server listens on **http://127.0.0.1:9140/**. Google uses a sign-in popup; the installation needs its OAuth client configured once behind the button. No Google credentials are included. Run `npm run test:plugins` for the plugin regression suite.
+
+## Personal homepage
+
+Home opens a configurable dashboard for Gmail, Calendar, Tasks, GitHub, harnesses, service health, Keep, and Voice. Use Customize to choose, resize, and reorder widgets. Keep and Voice open their Google apps. See [homepage documentation](documentation/HOMEPAGE.md).

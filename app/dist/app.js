@@ -1,12 +1,14 @@
 const $ = id => document.getElementById(id);
 const key = 'harness-hub-tabs-v1';
 const tailnetName = 'hub.example.invalid';
-const localHub = (['127.0.0.1', 'localhost'].includes(location.hostname) && location.port === '9130') || location.hostname === tailnetName;
+const localHub = (['127.0.0.1', 'localhost'].includes(location.hostname) && ['9130','9140'].includes(location.port)) || location.hostname === tailnetName;
 const tailnetHubUrl = `https://${tailnetName}/`;
-const loopbackHub = ['127.0.0.1', 'localhost'].includes(location.hostname) && location.port === '9130';
-const hermesUrl = loopbackHub ? `http://${location.hostname}:9132/` : `https://${tailnetName}:8443/`;
+const loopbackHub = ['127.0.0.1', 'localhost'].includes(location.hostname) && ['9130','9140'].includes(location.port);
+const hermesUrl = loopbackHub ? `http://${location.hostname}:9142/` : `https://${tailnetName}:8443/`;
 const builtInTabs = [
-  { id: 'codex', name: 'Codex', url: 'http://127.0.0.1:9131/codex.html' },
+  { id: 'home', name: 'Home', url: new URL('home.html', location.href).href },
+  { id: 'plugins', name: 'Plugins', url: new URL('plugins.html', location.href).href },
+  { id: 'codex', name: 'Codex', url: 'http://127.0.0.1:9141/codex.html' },
   { id: 'gemini', name: 'Gemini', url: 'https://gemini.google.com/app' },
   { id: 'hark', name: 'Hark', url: 'https://hark.com/chat' },
   { id: 'antigravity', name: 'Antigravity', url: 'https://antigravity.google.com/' },
@@ -16,10 +18,13 @@ const builtInTabs = [
   { id: 'control-center', name: 'Control Center', url: new URL('control-center.html', location.href).href }
 ];
 let tabs = [{ id: 'hermes', name: 'Hermes', url: hermesUrl }];
-let active = 'hermes';
+let active = 'home';
 let editing = null;
 let geminiHistory = [];
 let navStatusTimer = null;
+// Per-process service URLs (such as dsh web's launch token) come from the hub
+// and stay out of the saved tab list.
+const harnessUrls = {};
 
 const dark = document.createElement('link');
 dark.rel = 'stylesheet';
@@ -43,7 +48,7 @@ function addBuiltIns() {
     const found = tabs.find(t => t.id === builtIn.id);
     if (!found) tabs.push({ ...builtIn });
   }
-  if (!tabs.some(t => t.id === 'codex' || t.name.toLowerCase() === 'codex')) tabs.push({ ...builtInTabs[0] });
+  if (!tabs.some(t => t.id === 'codex' || t.name.toLowerCase() === 'codex')) tabs.push({ ...builtInTabs.find(tab => tab.id === 'codex') });
 }
 
 try {
@@ -59,12 +64,16 @@ try {
   }
 } catch { /* Start with the default tab set when stored data is invalid. */ }
 addBuiltIns();
+// Home is an app surface, not a user-editable dashboard address.
+tabs = [ { ...builtInTabs.find(t => t.id === 'home') }, ...tabs.filter(t => t.id !== 'home') ];
 save();
+const requestedView = new URLSearchParams(location.search).get('view');
+if (tabs.some(t => t.id === requestedView)) active = requestedView;
 
 async function checkConnection(t) {
   if (!localHub || t.id !== 'hermes') return;
   try {
-    const r = await fetch('http://127.0.0.1:9131/hub/health?url=' + encodeURIComponent('http://127.0.0.1:9119/'));
+    const r = await fetch('http://127.0.0.1:9141/hub/health?url=' + encodeURIComponent('http://127.0.0.1:9119/'));
     const s = await r.json();
     if (active !== t.id || s.error) return;
     if (s.reachable) { $('state').textContent = 'Dashboard responded · HTTP ' + s.status; return; }
@@ -226,6 +235,7 @@ async function initializeGemini() {
 }
 
 const iconPaths = {
+  home: ['m3 10 9-7 9 7', 'M5 9v12h14V9', 'M9 21v-8h6v8'],
   herdr: ['M3 5h18v14H3z', 'M3 9h18', 'm7 12 2.5 2-2.5 2', 'M12.5 16h3'],
   dsh: ['M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z', 'M8 10v0', 'M12 10v0', 'M16 10v0'],
   gemini: ['M12 2c.7 5.1 2.9 7.3 10 10-7.1 2.7-9.3 4.9-10 10C11.3 16.9 9.1 14.7 2 12 9.1 9.3 11.3 7.1 12 2Z'],
@@ -288,6 +298,12 @@ async function refreshHarnessNav() {
       const response = await fetch('/hub/harness/status');
       if (response.ok) statuses = (await response.json()).statuses || {};
     } catch { /* Keep visible statuses neutral if the local service is starting. */ }
+  }
+  for (const [id, status] of Object.entries(statuses)) {
+    if (!status.url || harnessUrls[id] === status.url) continue;
+    harnessUrls[id] = status.url;
+    const frame = document.getElementById('frame-' + id);
+    if (frame) frame.src = status.url;
   }
   for (const button of $('tabs').querySelectorAll('[data-harness-id]')) {
     const status = statuses[button.dataset.harnessId] || { state: 'unknown', label: localHub ? 'Status unavailable' : 'Open the local or Tailscale workspace for live status' };
@@ -359,15 +375,15 @@ function render() {
     $('tabs').append(b);
 
     const localOnly = t.id === 'dsh' && !localHub;
-    const externalOnly = t.id === 'antigravity';
+    const externalOnly = ['antigravity','hark'].includes(t.id);
     let frame = document.getElementById('frame-' + t.id);
     if (t.id === 'gemini' && frame) { frame.remove(); frame = null; }
-    if (!localOnly && !externalOnly && t.id !== 'gemini' && !frame) {
+    if (!localOnly && !externalOnly && t.id !== 'gemini' && t.id === active && !frame) {
       frame = document.createElement('iframe');
       frame.id = 'frame-' + t.id;
       frame.title = t.name + ' dashboard';
       frame.referrerPolicy = 'no-referrer';
-      frame.src = t.url;
+      frame.src = harnessUrls[t.id] || t.url;
       frame.onload = () => { if (active === t.id && !$('offline-status')) $('state').textContent = 'Embedded view · ' + t.name; };
       $('frames').append(frame);
     }
@@ -377,17 +393,20 @@ function render() {
     if (f.tagName === 'IFRAME' && !tabs.some(t => 'frame-' + t.id === f.id)) f.remove();
   }
 
+  if (current.id === 'home') $('frame-home')?.contentWindow.postMessage({type:'arnes:home-visible'},location.origin);
   $('notice').hidden = current.id !== 'hermes';
   const geminiPanel = $('gemini-app');
   if (geminiPanel) geminiPanel.hidden = current.id !== 'gemini';
   if (current.id === 'gemini') {
     $('offline-status')?.remove();
     initializeGemini();
+  } else if (current.id === 'hark') {
+    showNotice('Hark opens separately', 'Hark blocks embedded sign-in. Open it in a browser tab to use your account.', 'Open Hark', () => window.open(current.url, '_blank', 'noopener'), null, null);
   } else if (current.id === 'antigravity') {
     showNotice('Antigravity Remote Control opens separately', 'Enable Remote Control in the desktop app, then open the dashboard in a browser tab.',
       'Open Antigravity', () => window.open(current.url, '_blank', 'noopener'), null, null);
   } else if (current.id === 'dsh' && !localHub) {
-    showNotice('Open DSH on this device', 'DSH runs locally on the computer where it is installed. Open the local workspace to embed it, or open the local DSH address directly.', 'Open local workspace', () => window.open('http://127.0.0.1:9130/', '_blank', 'noopener'), 'Open DSH separately', () => window.open(current.url, '_blank', 'noopener'));
+    showNotice('Open DSH on this device', 'DSH runs locally on the computer where it is installed. Open the local workspace to embed it, or open the local DSH address directly.', 'Open local workspace', () => window.open('http://127.0.0.1:9140/', '_blank', 'noopener'), 'Open DSH separately', () => window.open(current.url, '_blank', 'noopener'));
   }
 
   const heading = $('title');
@@ -405,6 +424,7 @@ function render() {
     heading.textContent = current.name;
     if (current.id === 'hermes' || current.id === 'codex') heading.classList.add('system-wordmark-' + current.id);
   }
+  $('edit').hidden = current.id === 'home';
   $('external').href = current.url;
   $('address').textContent = new URL(current.url).host;
   $('external').textContent = current.id === 'gemini' ? 'Open Gemini ↗' : current.id === 'antigravity' ? 'Open Antigravity ↗' : 'Open separately ↗';
@@ -430,7 +450,12 @@ function configure(id = null) {
 }
 
 $('add').onclick = () => configure();
-$('edit').onclick = () => configure(active);
+$('edit').onclick = () => { if (active !== 'home') configure(active); };
+ document.querySelector('.brand').onclick = e => { e.preventDefault(); active = 'home'; render(); };
+ window.addEventListener('message', e => {
+   if (e.origin !== location.origin || e.source !== $('frame-home')?.contentWindow || e.data?.type !== 'arnes:navigate') return;
+   if (tabs.some(t => t.id === e.data.id)) { active = e.data.id; render(); }
+ });
 $('cancel').onclick = () => $('config').close();
 $('dismiss').onclick = () => $('notice').hidden = true;
 $('reload').onclick = () => {
@@ -445,7 +470,7 @@ $('reload').onclick = () => {
   else if (t) { window.open(t.url, '_blank', 'noopener'); $('state').textContent = 'Opened dashboard separately'; }
 };
 $('local').textContent = localHub ? 'the local workspace' : 'the private Tailscale workspace';
-$('local').onclick = () => window.open(localHub ? 'http://127.0.0.1:9130/' : tailnetHubUrl, '_blank', 'noopener');
+$('local').onclick = () => window.open(localHub ? 'http://127.0.0.1:9140/' : tailnetHubUrl, '_blank', 'noopener');
 $('form').onsubmit = e => {
   e.preventDefault();
   try {

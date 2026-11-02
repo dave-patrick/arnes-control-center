@@ -2,7 +2,7 @@ const pageKey = 'harness-hub-management-pages-v1';
 const $ = id => document.getElementById(id);
 if (window.self !== window.top) document.body.classList.add('embedded');
 const tailnetName = 'hub.example.invalid';
-const localHub = (['127.0.0.1', 'localhost'].includes(location.hostname) && location.port === '9130') || location.hostname === tailnetName;
+const localHub = (['127.0.0.1', 'localhost'].includes(location.hostname) && ['9130','9140'].includes(location.port)) || location.hostname === tailnetName;
 const historyBySystem = new Map();
 const systemIcons = { openviking: 'OV', perseus: 'PV', 'home-assistant': 'HA', 'lm-studio': 'LM', 'hermes-gateway': 'HG', 'hermes-dashboard': 'HD', dockhand: 'DK', searxng: 'SX', audiobookshelf: 'AB', traefik: 'TR', 'shockwave-api': 'SW', 'shockwave-updater': 'UP' };
 const overviewOnlySystems = new Set(['lm-studio', 'hermes-gateway', 'hermes-dashboard', 'shockwave-api', 'shockwave-updater', 'traefik']);
@@ -12,10 +12,11 @@ const systemUi = {
   'home-assistant': { frameUrl: 'http://127.0.0.1:8123/', openUrl: 'http://127.0.0.1:8123/', message: 'Home Assistant dashboard.' },
   'lm-studio': { openUrl: 'http://127.0.0.1:1234/v1/models', openLabel: 'Open model API', message: 'LM Studio exposes its local model API on this endpoint. Use the LM Studio desktop app for model and server management.' },
   'hermes-gateway': { message: 'Hermes Gateway runs on this PC and exposes a local health endpoint only. Use the Hermes Dashboard tab for chat and session management.' },
-  'hermes-dashboard': { frameUrl: location.protocol === 'https:' ? 'https://hub.example.invalid:8443/' : 'http://127.0.0.1:9132/', openUrl: 'http://127.0.0.1:9119/', message: 'Hermes Dashboard · local authenticated proxy.' },
+  'hermes-dashboard': { frameUrl: location.protocol === 'https:' ? 'https://hub.example.invalid:8443/' : 'http://127.0.0.1:9142/', openUrl: 'http://127.0.0.1:9119/', message: 'Hermes Dashboard · local authenticated proxy.' },
   dockhand: { frameUrl: 'http://127.0.0.1:3000/containers', openUrl: 'http://127.0.0.1:3000/containers', message: 'Dockhand container management.' },
   searxng: { frameUrl: 'http://127.0.0.1:8080/', openUrl: 'http://127.0.0.1:8080/', message: 'SearXNG search interface.' },
   audiobookshelf: { frameUrl: '/audiobookshelf/', openUrl: 'http://127.0.0.1:8000/', openLabel: 'Open Audiobookshelf separately', message: 'Audiobookshelf is available through the private same-origin proxy in the Tailscale workspace.' },
+  bookorbit: { message: 'BookOrbit is embedded from T580 through the Control Center proxy.' },
   traefik: { message: 'Traefik’s TLS entrypoint is reachable. No dashboard URL is recorded for this service.' },
   'shockwave-api': { message: 'The Shockwave API is mapped to T580 localhost only, so that endpoint is not reachable from this browser. Status is from the latest Docker report.' },
   'shockwave-updater': { message: 'The updater has no browser interface. Status is from the latest Docker report.' }
@@ -284,6 +285,7 @@ function renderHealth(payload) {
   const rows = $('system-rows');
   rows.replaceChildren();
   systems = payload.systems || [];
+  for(const system of systems) if(system.openUrl) systemUi[system.id]={...systemUi[system.id],openUrl:system.openUrl,frameUrl:system.frameUrl,message:system.message||systemUi[system.id]?.message};
   managementStatus = payload.managementStatus || {};
   let online = 0;
 

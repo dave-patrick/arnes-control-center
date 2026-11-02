@@ -1,0 +1,53 @@
+{
+  "apiVersion": 1,
+  "id": "local-shell",
+  "name": "Local shell",
+  "version": "1.0.0",
+  "description": "Run commands on this PC with your Windows user’s access. Commands can change files and settings. Enable only for a trusted local workspace.",
+  "permissions": [
+    "shell.execute"
+  ],
+  "actions": [
+    {
+      "id": "run",
+      "title": "Run command",
+      "fields": [
+        {
+          "name": "cwd",
+          "label": "Working directory",
+          "required": true,
+          "placeholder": "C:\\repos\\arnes"
+        },
+        {
+          "name": "command",
+          "label": "Command",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Get-Location"
+        },
+        {
+          "name": "timeout",
+          "label": "Time limit (seconds, 1–120)",
+          "type": "number",
+          "value": "30"
+        }
+      ]
+    },
+    {
+      "id": "jobs",
+      "title": "Recent shell jobs",
+      "audit": false
+    },
+    {
+      "id": "cancel",
+      "title": "Cancel a job",
+      "fields": [
+        {
+          "name": "id",
+          "label": "Job ID",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

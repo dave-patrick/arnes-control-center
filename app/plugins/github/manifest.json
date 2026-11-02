@@ -1,0 +1,28 @@
+{
+  "apiVersion": 1,
+  "id": "github",
+  "name": "GitHub",
+  "version": "1.0.0",
+  "description": "Read your recently updated repositories using this PC\u2019s existing GitHub CLI sign-in.",
+  "permissions": [
+    "github.read",
+    "process.execute.gh"
+  ],
+  "actions": [
+    {
+      "id": "repositories",
+      "title": "Recently updated repositories"
+    },
+    {
+      "id": "repository",
+      "title": "Repository activity",
+      "fields": [
+        {
+          "name": "repo",
+          "label": "Owner/repository",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
